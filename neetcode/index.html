@@ -1,0 +1,2310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeetCode Grind Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EAEEF0;
+  --surface:#FFFFFF;
+  --surface-2:#F3F6F7;
+  --line:#D3DCE0;
+  --line-soft:#E5EAEC;
+  --ink:#101E26;
+  --ink-2:#3B4E58;
+  --muted:#647985;
+  --accent:#0A6B72;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#D2E7E7;
+  --easy:#1F7A4C;
+  --easy-bg:#DCEFE3;
+  --med:#8C5A08;
+  --med-bg:#F6E8CE;
+  --hard:#AE2F45;
+  --hard-bg:#F7DDE1;
+  --star:#A8700A;
+  --shadow:0 1px 2px rgba(16,30,38,.06), 0 8px 24px -16px rgba(16,30,38,.3);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1418;
+    --surface:#141E23;
+    --surface-2:#18242A;
+    --line:#28363D;
+    --line-soft:#1E2B31;
+    --ink:#E2EBEF;
+    --ink-2:#B3C5CD;
+    --muted:#8398A3;
+    --accent:#3FB2B8;
+    --accent-ink:#04171A;
+    --accent-soft:#173A3D;
+    --easy:#5FC088;
+    --easy-bg:#16311F;
+    --med:rgb(223,166,88);
+    --med-bg:rgb(48,36,17);
+    --hard:rgb(240,120,138);
+    --hard-bg:rgb(56,25,31);
+    --star:rgb(216,166,64);
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px -18px rgba(0,0,0,.85);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1418;
+  --surface:#141E23;
+  --surface-2:#18242A;
+  --line:#28363D;
+  --line-soft:#1E2B31;
+  --ink:#E2EBEF;
+  --ink-2:#B3C5CD;
+  --muted:#8398A3;
+  --accent:#3FB2B8;
+  --accent-ink:#04171A;
+  --accent-soft:#173A3D;
+  --easy:#5FC088;
+  --easy-bg:#16311F;
+  --med:rgb(223,166,88);
+  --med-bg:rgb(48,36,17);
+  --hard:rgb(240,120,138);
+  --hard-bg:rgb(56,25,31);
+  --star:rgb(216,166,64);
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px -18px rgba(0,0,0,.85);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;}
+button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;}
+.num{font-variant-numeric:tabular-nums;}
+
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px 80px;}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+}
+.masthead-inner{
+  max-width:1140px;margin:0 auto;padding:20px 20px 18px;
+  display:flex;flex-wrap:wrap;gap:20px 28px;align-items:flex-end;justify-content:space-between;
+}
+.brand{display:flex;flex-direction:column;gap:4px;}
+.brand h1{
+  margin:0;font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:20px;font-weight:600;letter-spacing:-.02em;
+}
+.brand h1 span{color:var(--accent);}
+.brand p{margin:0;color:var(--muted);font-size:13px;max-width:52ch;}
+
+.headline-stats{display:flex;align-items:flex-end;gap:22px;}
+.bigcount{display:flex;align-items:baseline;gap:6px;}
+.bigcount b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1;}
+.bigcount i{font-style:normal;color:var(--muted);font-size:15px;font-family:"IBM Plex Mono",ui-monospace,monospace;}
+.bigcount em{font-style:normal;display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+
+.ring{width:56px;height:56px;flex:none;}
+.ring circle{fill:none;stroke-width:7;}
+.ring .track{stroke:var(--line);}
+.ring .fill{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .35s ease;}
+
+/* ---------- toolbar ---------- */
+.toolbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.toolbar-inner{
+  max-width:1140px;margin:0 auto;padding:12px 20px;
+  display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+}
+.field{position:relative;flex:1 1 240px;min-width:200px;}
+.field input{
+  width:100%;padding:8px 12px 8px 34px;
+  border:1px solid var(--line);border-radius:8px;
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:14px;
+}
+.field input::placeholder{color:var(--muted);}
+.field svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;}
+
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface-2);}
+.seg button{
+  padding:7px 12px;font-size:12.5px;font-weight:500;color:var(--ink-2);
+  border-right:1px solid var(--line);white-space:nowrap;
+}
+.seg button:last-child{border-right:none;}
+.seg button:hover{background:var(--surface);}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);}
+.seg button .c{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;opacity:.65;margin-left:5px;font-size:11px;}
+
+select.topicpick{
+  padding:7px 10px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:13px;max-width:220px;
+}
+.ghost{
+  padding:7px 11px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface-2);font-size:12.5px;font-weight:500;color:var(--ink-2);
+}
+.ghost:hover{background:var(--surface);border-color:var(--muted);}
+
+/* ---------- meters ---------- */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:22px 0 10px;}
+.meter{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+}
+.meter-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.meter-label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;}
+.meter-val{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);}
+.bar{height:5px;border-radius:99px;background:var(--line-soft);margin-top:9px;overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .3s ease;}
+.m-easy .meter-label{color:var(--easy);} .m-easy .bar i{background:var(--easy);}
+.m-med .meter-label{color:var(--med);} .m-med .bar i{background:var(--med);}
+.m-hard .meter-label{color:var(--hard);} .m-hard .bar i{background:var(--hard);}
+.m-star .meter-label{color:var(--star);} .m-star .bar i{background:var(--star);}
+
+.notice{
+  display:flex;gap:9px;align-items:flex-start;
+  margin:14px 0 20px;padding:10px 13px;
+  border:1px dashed var(--line);border-radius:9px;
+  color:var(--muted);font-size:12.5px;background:var(--surface-2);
+}
+.notice b{color:var(--ink-2);font-weight:600;}
+
+/* ---------- topic sections ---------- */
+.topic{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:14px;overflow:hidden;
+}
+.topic-head{
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:13px 16px;text-align:left;
+}
+.topic-head:hover{background:var(--surface-2);}
+.chev{width:12px;height:12px;flex:none;stroke:var(--muted);stroke-width:2.2;fill:none;transition:transform .18s ease;}
+.topic[data-open="false"] .chev{transform:rotate(-90deg);}
+.topic-name{font-weight:600;font-size:15px;letter-spacing:-.01em;flex:1;}
+.topic-meter{width:110px;flex:none;}
+.topic-count{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  font-size:12.5px;color:var(--muted);min-width:62px;text-align:right;flex:none;
+}
+.topic[data-open="false"] .rows{display:none;}
+
+.rows{border-top:1px solid var(--line-soft);}
+.row{
+  display:grid;
+  grid-template-columns:38px 34px 1fr 88px 78px;
+  align-items:center;
+  gap:4px;
+  padding:0 16px 0 6px;
+  border-bottom:1px solid var(--line-soft);
+  min-height:38px;
+  position:relative;
+}
+.row:last-child{border-bottom:none;}
+.row:hover{background:var(--surface-2);}
+.row.hide{display:none;}
+.row.done .title{color:var(--muted);}
+.row.done::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);
+}
+.tick{
+  width:19px;height:19px;border-radius:5px;border:1.5px solid var(--line);
+  display:grid;place-items:center;margin:0 auto;background:var(--surface);
+}
+.tick svg{width:11px;height:11px;stroke:var(--accent-ink);stroke-width:3;fill:none;opacity:0;}
+.row.done .tick{background:var(--accent);border-color:var(--accent);}
+.row.done .tick svg{opacity:1;}
+.tickbtn{display:block;width:100%;padding:9px 0;}
+.tickbtn:hover .tick{border-color:var(--accent);}
+
+.starbtn{display:grid;place-items:center;width:100%;padding:9px 0;}
+.starbtn svg{width:15px;height:15px;stroke:var(--muted);stroke-width:1.6;fill:none;}
+.starbtn:hover svg{stroke:var(--star);}
+.row.starred .starbtn svg{stroke:var(--star);fill:var(--star);}
+
+.title{
+  font-size:14px;text-decoration:none;padding:8px 4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.title:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px;}
+.tag150{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:.06em;color:var(--accent);border:1px solid var(--accent-soft);
+  background:var(--accent-soft);border-radius:4px;padding:1px 4px;margin-left:7px;vertical-align:1px;
+}
+.diff{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;font-weight:500;
+  letter-spacing:.04em;padding:2px 8px;border-radius:99px;justify-self:start;
+}
+.d-E{color:var(--easy);background:var(--easy-bg);}
+.d-M{color:var(--med);background:var(--med-bg);}
+.d-H{color:var(--hard);background:var(--hard-bg);}
+.solve{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;color:var(--muted);
+  text-decoration:none;justify-self:end;white-space:nowrap;
+}
+.solve:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px;}
+
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:14px;}
+
+footer.foot{
+  margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;
+}
+
+
+
+/* ---------- the file card ---------- */
+.filecard{
+  display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;
+  margin:14px 0 20px;padding:14px 16px;
+  border:1px solid var(--line);border-radius:11px;background:var(--surface);
+}
+.filecard[hidden]{display:none;}
+.filecard[data-state="setup"],
+.filecard[data-state="reconnect"],
+.filecard[data-state="reconnect-lost"]{
+  border-color:var(--accent);
+  box-shadow:inset 3px 0 0 var(--accent);
+}
+.fc-main{flex:1 1 320px;min-width:260px;}
+.filecard h2{margin:0 0 3px;font-size:14px;font-weight:600;letter-spacing:-.01em;}
+.filecard p{margin:0;font-size:12.5px;color:var(--muted);max-width:66ch;}
+.fc-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.cta{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--accent);
+  background:var(--accent);color:var(--accent-ink);
+  font-size:13px;font-weight:600;
+}
+.cta:hover{filter:brightness(1.08);}
+.filecard[data-state="connected"] h2,
+.filecard[data-state="server"] h2{font-weight:500;color:var(--ink-2);}
+
+.store{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px;border:1px solid var(--line);border-radius:99px;
+  font-size:12px;color:var(--muted);background:var(--surface-2);white-space:nowrap;
+}
+.store i{width:7px;height:7px;border-radius:99px;background:var(--muted);flex:none;}
+.store[data-state="on"]{color:var(--ink-2);border-color:var(--accent-soft);background:var(--accent-soft);}
+.store[data-state="on"] i{background:var(--accent);}
+.store.pending i{opacity:.4;}
+.notice code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--ink-2);}
+
+.ghost.danger{border-color:var(--hard);color:var(--hard);background:var(--hard-bg);}
+
+.panel{
+  position:fixed;inset:0;z-index:60;
+  background:rgba(8,18,23,.55);
+  display:grid;place-items:center;padding:24px;
+}
+.panel[hidden]{display:none;}
+.panel-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:20px;max-width:520px;width:100%;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:12px;
+}
+.panel-card h2{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em;}
+.panel-card p{margin:0;font-size:13px;color:var(--muted);}
+.panel-card code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--ink-2);}
+.panel-actions{display:flex;flex-wrap:wrap;gap:8px;}
+#pasteBox{
+  width:100%;min-height:130px;resize:vertical;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;line-height:1.5;
+  padding:10px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface-2);color:var(--ink);
+}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:70;
+  max-width:min(560px,calc(100vw - 32px));
+  background:var(--ink);color:var(--bg);
+  padding:10px 15px;border-radius:9px;font-size:13px;box-shadow:var(--shadow);
+}
+.toast[hidden]{display:none;}
+
+@media (max-width:720px){
+  .row{grid-template-columns:34px 30px 1fr 74px;padding-right:12px;}
+  .solve{display:none;}
+  .topic-meter{display:none;}
+  .headline-stats{gap:16px;}
+  .bigcount b{font-size:28px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important;}
+}
+</style>
+</head>
+<body>
+
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <h1>neetcode <span>/</span> grind ledger</h1>
+      <p>Every problem on the NeetCode list, linked straight to LeetCode. Tick what you have solved, star what you want to revise.</p>
+    </div>
+    <div class="headline-stats">
+      <svg class="ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle class="track" cx="22" cy="22" r="18"></circle>
+        <circle class="fill" id="ring" cx="22" cy="22" r="18" transform="rotate(-90 22 22)" stroke-dasharray="113.1" stroke-dashoffset="113.1"></circle>
+      </svg>
+      <div>
+        <div class="bigcount"><b id="solvedCount">0</b><i>/ <span id="totalCount">0</span></i></div>
+        <em>solved</em>
+      </div>
+      <div>
+        <div class="bigcount"><b id="starCount">0</b></div>
+        <em>to revise</em>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <label class="field">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      <input id="search" type="search" placeholder="Search 973 problems…" aria-label="Search problems">
+    </label>
+
+    <div class="seg" id="segScope" role="group" aria-label="List">
+      <button data-v="all" aria-pressed="true">All</button>
+      <button data-v="150" aria-pressed="false">NeetCode 150</button>
+    </div>
+
+    <div class="seg" id="segDiff" role="group" aria-label="Difficulty">
+      <button data-v="all" aria-pressed="true">All</button>
+      <button data-v="E" aria-pressed="false">Easy<span class="c" id="cE"></span></button>
+      <button data-v="M" aria-pressed="false">Medium<span class="c" id="cM"></span></button>
+      <button data-v="H" aria-pressed="false">Hard<span class="c" id="cH"></span></button>
+    </div>
+
+    <div class="seg" id="segStatus" role="group" aria-label="Status">
+      <button data-v="all" aria-pressed="true">All</button>
+      <button data-v="todo" aria-pressed="false">Unsolved</button>
+      <button data-v="done" aria-pressed="false">Solved</button>
+      <button data-v="star" aria-pressed="false">Revise</button>
+    </div>
+
+    <select class="topicpick" id="topicSel" aria-label="Topic"><option value="all">All topics</option></select>
+    <button class="ghost" id="toggleAll">Collapse all</button>
+    <button class="ghost" id="exportBtn">Export</button>
+    <button class="ghost" id="importBtn">Import</button>
+    <button class="ghost" id="resetBtn">Reset</button>
+    <span class="store" id="storeStatus" data-state="off"><i aria-hidden="true"></i><span id="storeText">Not saving</span></span>
+    <input type="file" id="fileIn" accept="application/json,.json" hidden>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="meters">
+    <div class="meter m-easy"><div class="meter-top"><span class="meter-label">Easy</span><span class="meter-val" id="vE">0 / 0</span></div><div class="bar"><i id="bE" style="width:0%"></i></div></div>
+    <div class="meter m-med"><div class="meter-top"><span class="meter-label">Medium</span><span class="meter-val" id="vM">0 / 0</span></div><div class="bar"><i id="bM" style="width:0%"></i></div></div>
+    <div class="meter m-hard"><div class="meter-top"><span class="meter-label">Hard</span><span class="meter-val" id="vH">0 / 0</span></div><div class="bar"><i id="bH" style="width:0%"></i></div></div>
+    <div class="meter m-star"><div class="meter-top"><span class="meter-label">Revise list</span><span class="meter-val" id="vS">0 starred</span></div><div class="bar"><i id="bS" style="width:0%"></i></div></div>
+  </div>
+
+  <section class="filecard" id="fileCard" data-state="setup" hidden>
+    <div class="fc-main">
+      <h2 id="fcTitle">Keep your progress in a JSON file</h2>
+      <p id="fcBody"></p>
+    </div>
+    <div class="fc-actions" id="fcActions"></div>
+  </section>
+
+  <main id="list"></main>
+
+  <footer class="foot">
+    <span>Problem set and topic grouping follow the NeetCode practice list; every title links to leetcode.com.</span>
+    <span class="mono num" id="shownCount"></span>
+  </footer>
+
+  <div class="panel" id="panel" hidden>
+    <div class="panel-card" role="dialog" aria-modal="true" aria-label="Restore progress">
+      <h2>Restore your progress</h2>
+      <p>Pick the <code>neetcode-progress.json</code> you exported, or paste its contents below.</p>
+      <div class="panel-actions">
+        <button class="ghost" id="pickFile">Choose file…</button>
+        <button class="ghost" id="pasteLoad">Load pasted text</button>
+        <button class="ghost" id="panelClose">Cancel</button>
+      </div>
+      <textarea id="pasteBox" spellcheck="false" placeholder='{"solved":[...],"starred":[...]}'></textarea>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+</div>
+
+<script id="raw" type="text/plain">#Arrays & Hashing
+Concatenation of Array|E
+Contains Duplicate|E
+Valid Anagram|E
+Replace Elements With Greatest Element On Right Side|E
+Is Subsequence|E
+Append Characters to String to Make Subsequence|M
+Score of a String|E
+Length of Last Word|E
+Valid Word Square|E
+Confusing Number|E
+Find Anagram Mappings|E
+Sentence Similarity|E
+Largest Unique Number|E
+Single-Row Keyboard|E|single-row-keyboard
+Palindrome Permutation|E
+Counting Elements|E
+Perform String Shifts|E
+Design Compressed String Iterator|E
+Logger Rate Limiter|E
+Group Shifted Strings|M
+Moving Average from Data Stream|E
+Maximum Distance in Arrays|M
+Lonely Pixel I|M
+Sparse Matrix Multiplication|M
+Candy Crush|M
+Find Smallest Common Element in All Rows|M
+One Edit Distance|M
+Reverse Words in a String II|M
+Shortest Way to Form String|M
+First Unique Number|M
+Design Tic-Tac-Toe|M|design-tic-tac-toe
+Design Snake Game|M
+Zigzag Iterator|M
+Design A Leaderboard|M
+Number of Senior Citizens|E
+Two Sum|E
+Max Consecutive Ones|E
+Longest Common Prefix|E
+String Matching in an Array|E
+Group Anagrams|M
+Pascals Triangle|E
+Remove Element|E
+Unique Email Addresses|E
+Isomorphic Strings|E
+Can Place Flowers|E
+Majority Element|E
+Maximum Difference Between Even and Odd Frequency I|E
+Next Greater Element I|E
+Longest Strictly Increasing or Strictly Decreasing Subarray|E
+Maximum Ascending Subarray Sum|E
+Find Pivot Index|E
+Kth Distinct String in an Array|E
+Range Sum Query - Immutable|E
+Find All Numbers Disappeared in An Array|E
+Find Missing and Repeated Values|E
+Maximum Number of Balloons|E
+Word Pattern|E
+Design HashSet|E
+Design HashMap|E
+Height Checker|E
+Find Lucky Integer in an Array|E
+Special Array I|E
+Check if Array Is Sorted and Rotated|E
+Monotonic Array|E
+Divide Array Into Equal Pairs|E
+Number of Good Pairs|E
+Pascal's Triangle II|E
+Find Words That Can Be Formed by Characters|E
+Count the Number of Consistent Strings|E
+Ransom Note|E
+Largest 3-Same-Digit Number in String|E|largest-3-same-digit-number-in-string
+Destination City|E
+Maximum Product Difference Between Two Pairs|E
+Circular Sentence|E
+Maximum Score After Splitting a String|E
+Path Crossing|E
+Minimum Changes To Make Alternating Binary String|E
+Redistribute Characters to Make All Strings Equal|E
+Longest Palindrome|E
+Largest Substring Between Two Equal Characters|E
+Set Mismatch|E
+First Unique Character in a String|E
+Intersection of Two Arrays|E
+Find Common Characters|E
+Number of Students Unable to Eat Lunch|E
+Time Needed to Buy Tickets|E
+Special Array with X Elements Greater than or Equal X|E
+Array Transformation|E
+Shortest Word Distance|E
+Count Vowel Strings in Ranges|M
+Average Waiting Time|M
+Sort an Array|M
+Sort Colors|M
+Relative Sort Array|E
+Sort the People|E
+Sort Array by Increasing Frequency|E
+Custom Sort String|M
+Top K Frequent Elements|M
+Encode and Decode Strings|M
+Range Sum Query 2D Immutable|M
+Analyze User Website Visit Pattern|M
+Product of Array Except Self|M
+Minimum Number of Operations to Move All Balls to Each Box|M
+Valid Sudoku|M
+Longest Consecutive Sequence|M
+Encode and Decode TinyURL|M
+Brick Wall|M
+Best Time to Buy And Sell Stock II|M
+Majority Element II|M
+Minimum Index of a Valid Split|M
+Subarray Sum Equals K|M
+Subarray Sums Divisible by K|M
+Make Sum Divisible by P|M
+Unique Length 3 Palindromic Subsequences|M
+Number of Sub-arrays With Odd Sum|M|number-of-sub-arrays-with-odd-sum
+Minimum Number of Swaps to Make The String Balanced|M
+Number of Pairs of Interchangeable Rectangles|M
+Maximum Product of The Length of Two Palindromic Subsequences|M
+Grid Game|M
+Find All Anagrams in a String|M
+Find The Index of The First Occurrence in a String|E
+Wiggle Sort|M
+Largest Number|M
+Continuous Subarray Sum|M
+Push Dominoes|M
+Repeated DNA Sequences|M
+Insert Delete Get Random O(1)|M|insert-delete-getrandom-o1
+Check if a String Contains all Binary Codes of Size K|M
+Non Decreasing Array|M
+Number of Ways to Split Array|M
+Sign of the Product of an Array|E
+Find the Difference of Two Arrays|E
+Uncommon Words from Two Sentences|E
+Design Parking System|E
+Shifting Letters II|M
+Number of Zero-Filled Subarrays|M|number-of-zero-filled-subarrays
+Word Subsets|M
+Optimal Partition of String|M
+Design Underground System|M
+Minimum Penalty for a Shop|M
+Champagne Tower|M
+Sum of Absolute Differences in a Sorted Array|M
+Design a Food Rating System|M
+Convert an Array Into a 2D Array With Conditions|M
+Minimum Number of Operations to Make Array Empty|M
+Divide Array Into Arrays With Max Difference|M
+Sequential Digits|M
+Sort Characters By Frequency|M
+Sort the Jumbled Numbers|M
+Find Polygon with the Largest Perimeter|M
+Minimum Remove to Make Valid Parentheses|M
+Contiguous Array|M
+Count Number of Bad Pairs|M
+Find All Duplicates in an Array|M
+Find the Length of the Longest Common Prefix|M
+Count Unguarded Cells in the Grid|M
+Design Hit Counter|M
+Shortest Word Distance II|M
+Dot Product of Two Sparse Vectors|M
+Brightest Position on Street|M
+Apply Substitutions|M
+The Earliest Moment When Everyone Become Friends|M
+Range Sum Query 2D - Mutable|M
+Synonymous Sentences|M
+Split Concatenated Strings|M
+Design Phone Directory|M
+Design Log Storage System|M
+Text Justification|H
+Naming a Company|H
+Number of Submatrices that Sum to Target|H
+First Missing Positive|H
+Shortest Palindrome|H
+Number of Ships in a Rectangle|H
+Time Taken to Cross the Door|H
+Design Excel Sum Formula|H
+#Two Pointers
+Reverse String|E
+Valid Palindrome|E
+Valid Palindrome II|E
+Valid Word Abbreviation|E
+Merge Strings Alternately|E
+Merge Sorted Array|E
+Merge Two 2D Arrays by Summing Values|E
+Move Zeroes|E
+Remove Duplicates From Sorted Array|E
+Squares of a Sorted Array|E
+Assign Cookies|E
+Find First Palindromic String in the Array|E
+Sort Array by Parity|E
+Reverse Words in a String III|E
+Backspace String Compare|E
+Check If Two String Arrays are Equivalent|E
+Apply Operations to an Array|E
+Strobogrammatic Number|E
+Two Sum Less Than K|E
+Adding Spaces to a String|M
+String Compression|M
+Remove Duplicates From Sorted Array II|M
+Partition Array According to Given Pivot|M
+Two Sum II Input Array Is Sorted|M
+3Sum|M
+4Sum|M
+Rotate Array|M
+Container With Most Water|M
+Number of Subsequences That Satisfy The Given Sum Condition|M
+Array With Elements Not Equal to Average of Neighbors|M
+Divide Players Into Teams of Equal Skill|M
+Boats to Save People|M
+K-th Symbol in Grammar|M|k-th-symbol-in-grammar
+Minimum Time To Make Rope Colorful|M
+Rearrange Array Elements by Sign|M
+Bag of Tokens|M
+Minimum Length of String after Deleting Similar Ends|M
+Sentence Similarity III|M
+Meeting Scheduler|M
+Product of Two Run Length Encoded Arrays|M
+Sort Transformed Array|M
+3Sum Smaller|M
+Trapping Rain Water|H
+#Sliding Window
+Contains Duplicate II|E
+Best Time to Buy And Sell Stock|E
+Minimum Recolors to Get K Consecutive Black Blocks|E
+Minimum Difference Between Highest And Lowest of K Scores|E
+Number of Sub Arrays of Size K and Avg Greater than or Equal to Threshold|M|number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold
+Grumpy Bookstore Owner|M
+Max Consecutive Ones II|M
+Longest Substring with At Most Two Distinct Characters|M
+Longest Substring with At Most K Distinct Characters|M
+Find K-Length Substrings With No Repeated Characters|M|find-k-length-substrings-with-no-repeated-characters
+Alternating Groups II|M
+Longest Substring Without Repeating Characters|M
+Longest Repeating Character Replacement|M
+Permutation In String|M
+Frequency of The Most Frequent Element|M
+Fruit into Basket|M|fruit-into-baskets
+Maximum Number of Vowels in a Substring of Given Length|M
+Minimum Number of Flips to Make The Binary String Alternating|M
+Defuse the Bomb|E
+Minimum Size Subarray Sum|M
+Find K Closest Elements|M
+Minimum Operations to Reduce X to Zero|M
+Get Equal Substrings Within Budget|M
+Number of Substrings Containing All Three Characters|M
+Binary Subarrays with Sum|M
+Count Number of Nice Subarrays|M
+Subarray Product Less Than K|M
+Max Consecutive Ones III|M
+Find the Power of K-Size Subarrays I|M|find-the-power-of-k-size-subarrays-i
+Maximum Sum of Distinct Subarrays With Length K|M
+Length of Longest Subarray With at Most K Frequency|M
+Count Subarrays Where Max Element Appears at Least K Times|M
+Maximum Beauty of an Array After Applying Operation|M
+Take K of Each Character From Left and Right|M
+Count of Substrings Containing Every Vowel and K Consonants II|M
+Minimum Window Substring|H
+Sliding Window Maximum|H
+Subarrays with K Different Integers|H
+Minimum Number of Operations to Make Array Continuous|H
+Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit|M
+Smallest Range Covering Elements from K Lists|H
+#Stack
+Crawler Log Folder|E
+Baseball Game|E
+Valid Parentheses|E
+Implement Stack Using Queues|E
+Implement Queue using Stacks|E
+Final Prices With a Special Discount in a Shop|E
+Make The String Great|E
+Min Stack|M
+Evaluate Reverse Polish Notation|M
+Removing Stars From a String|M
+Validate Stack Sequences|M
+Asteroid Collision|M
+Daily Temperatures|M
+Online Stock Span|M
+Car Fleet|M
+Simplify Path|M
+Decode String|M
+Remove K Digits|M
+Remove All Adjacent Duplicates In String II|M
+Reverse Substrings Between Each Pair of Parentheses|M
+Ternary Expression Parser|M
+Find Permutation|M
+Basic Calculator III|H
+Max Stack|H
+Minimum String Length After Removing Substrings|E
+Clear Digits|E
+Minimum Add to Make Parentheses Valid|M
+Maximum Width Ramp|M
+Basic Calculator II|M
+132 Pattern|M
+Flatten Nested List Iterator|M
+Sum of Subarray Minimums|M
+Maximum Frequency Stack|H
+Robot Collisions|H
+Number of Visible People in a Queue|H
+Largest Rectangle In Histogram|H
+Shortest Subarray with Sum at Least K|H
+Parsing A Boolean Expression|H
+Number of Atoms|H
+#Binary Search
+Binary Search|E
+Search Insert Position|E
+Guess Number Higher Or Lower|E
+Arranging Coins|E
+Valid Perfect Square|E
+Sqrt(x)|E
+Missing Number In Arithmetic Progression|E
+Check If a Number Is Majority Element in a Sorted Array|E
+Missing Element in Sorted Array|M
+Find the Index of the Large Integer|M
+Divide Chocolate|H
+Maximum Average Subarray II|H
+Single Element in a Sorted Array|M
+Find Peak Element|M
+Successful Pairs of Spells and Potions|M
+Search a 2D Matrix|M
+Koko Eating Bananas|M
+Capacity to Ship Packages Within D Days|M
+Maximum Candies Allocated to K Children|M
+House Robber IV|M
+Minimize the Maximum Difference of Pairs|M
+Minimized Maximum of Products Distributed to Any Store|M
+Minimum Limit of Balls in a Bag|M
+Minimum Time to Repair Cars|M
+Find Minimum In Rotated Sorted Array|M
+Search In Rotated Sorted Array|M
+Search In Rotated Sorted Array II|M
+Time Based Key Value Store|M
+Find First And Last Position of Element In Sorted Array|M
+Maximum Number of Removable Characters|M
+Most Beautiful Item for Each Query|M
+Random Pick with Weight|M
+Search Suggestions System|M
+Count the Number of Fair Pairs|M
+Binary Searchable Numbers in an Unsorted Array|M
+Leftmost Column With at Least a One|M
+Cutting Ribbons|M
+Split Array Largest Sum|H
+Find K-th Smallest Pair Distance|H|find-k-th-smallest-pair-distance
+Median of Two Sorted Arrays|H
+Find in Mountain Array|H
+Kth Smallest Product of Two Sorted Arrays|H
+Minimize Max Distance to Gas Station|H
+#Linked List
+Reverse Linked List|E
+Merge Two Sorted Lists|E
+Linked List Cycle|E
+Palindrome Linked List|E
+Remove Linked List Elements|E
+Remove Duplicates From Sorted List|E
+Middle of the Linked List|E
+Intersection of Two Linked Lists|E
+Delete N Nodes After M Nodes of a Linked List|E
+Insert into a Sorted Circular Linked List|M
+Plus One Linked List|M
+Print Immutable Linked List in Reverse|M
+Merge in Between Linked Lists|M
+Merge Nodes in Between Zeros|M
+Find the Minimum and Maximum Number of Nodes Between Critical Points|M
+Remove Nodes From Linked List|M
+Reorder List|M
+Maximum Twin Sum Of A Linked List|M
+Remove Nth Node From End of List|M
+Delete Nodes From Linked List Present in Array|M
+Swapping Nodes in a Linked List|M
+Copy List With Random Pointer|M
+Design Linked List|M
+Design Browser History|M
+Add Two Numbers|M
+Add Two Numbers II|M
+Find The Duplicate Number|M
+Swap Nodes In Pairs|M
+Sort List|M
+Partition List|M
+Rotate List|M
+Reverse Linked List II|M
+Design Circular Queue|M
+Insertion Sort List|M
+Split Linked List in Parts|M
+LRU Cache|M
+Remove Duplicates From an Unsorted Linked List|M
+LFU Cache|H
+Merge K Sorted Lists|H
+Reverse Nodes In K Group|H
+#Trees
+Binary Tree Inorder Traversal|E
+Binary Tree Preorder Traversal|E
+Binary Tree Postorder Traversal|E
+N-ary Tree Postorder Traversal|E|n-ary-tree-postorder-traversal
+Invert Binary Tree|E
+Maximum Depth of Binary Tree|E
+Diameter of Binary Tree|E
+Balanced Binary Tree|E
+Same Tree|E
+Subtree of Another Tree|E
+Convert Sorted Array to Binary Search Tree|E
+Merge Two Binary Trees|E
+Path Sum|E
+Range Sum of BST|E
+Leaf-Similar Trees|E|leaf-similar-trees
+Evaluate Boolean Binary Tree|E
+Closest Binary Search Tree Value|E
+Binary Tree Vertical Order Traversal|M
+Binary Tree Longest Consecutive Sequence|M
+Binary Tree Longest Consecutive Sequence II|M
+Count Univalue Subtrees|M
+Maximum Average Subtree|M
+Boundary of Binary Tree|M
+Find Leaves of Binary Tree|M
+Verify Preorder Sequence in Binary Search Tree|M
+Two Sum BSTs|M
+Largest BST Subtree|M
+Clone N-ary Tree|M|clone-n-ary-tree
+Find Root of N-Ary Tree|M|find-root-of-n-ary-tree
+Diameter of N-Ary Tree|M|diameter-of-n-ary-tree
+Nested List Weight Sum II|M
+Closest Binary Search Tree Value II|H
+Serialize and Deserialize N-ary Tree|H|serialize-and-deserialize-n-ary-tree
+Encode N-ary Tree to Binary Tree|H|encode-n-ary-tree-to-binary-tree
+Create Binary Tree From Descriptions|M
+Populating Next Right Pointers In Each Node|M
+Construct String From Binary Tree|M
+Lowest Common Ancestor of a Binary Tree|M
+Lowest Common Ancestor of a Binary Tree III|M
+Lowest Common Ancestor of a Binary Search Tree|M
+Insert into a Binary Search Tree|M
+Delete Node in a BST|M
+Binary Tree Level Order Traversal|M
+Binary Tree Right Side View|M
+Reverse Odd Levels of Binary Tree|M
+Minimum Number of Operations to Sort a Binary Tree by Level|M
+Kth Largest Sum in a Binary Tree|M
+Cousins in Binary Tree II|M
+Minimum Distance between BST Nodes|E
+Symmetric Tree|E
+Linked List in Binary Tree|M
+Minimum Time to Collect All Apples in a Tree|M
+Binary Tree Zigzag Level Order Traversal|M
+Construct Quad Tree|M
+Find Duplicate Subtrees|M
+Check Completeness of a Binary Tree|M
+Construct Binary Tree from Inorder and Postorder Traversal|M
+Maximum Width of Binary Tree|M
+Time Needed to Inform All Employees|M
+Count Good Nodes In Binary Tree|M
+Validate Binary Search Tree|M
+Kth Smallest Element In a Bst|M
+Recover Binary Search Tree|M
+Construct Binary Tree From Preorder And Inorder Traversal|M
+Construct Binary Tree from Preorder and Postorder Traversal|M
+Unique Binary Search Trees|M
+Unique Binary Search Trees II|M
+Number of Good Leaf Nodes Pairs|M
+Sum Root to Leaf Numbers|M
+House Robber III|M
+Flip Equivalent Binary Trees|M
+Operations On Tree|M
+All Possible Full Binary Trees|M
+Find Bottom Left Tree Value|M
+Trim a Binary Search Tree|M
+Binary Search Tree Iterator|M
+Validate Binary Tree Nodes|M
+Find Largest Value in Tree Row|M|find-largest-value-in-each-tree-row
+Pseudo-Palindromic Paths in a Binary Tree|M|pseudo-palindromic-paths-in-a-binary-tree
+Even Odd Tree|M
+Smallest String Starting From Leaf|M
+Delete Leaves With a Given Value|M
+Delete Nodes And Return Forest|M
+Distribute Coins in Binary Tree|M
+Convert Bst to Greater Tree|M
+Step-By-Step Directions From a Binary Tree Node to Another|M|step-by-step-directions-from-a-binary-tree-node-to-another
+Inorder Successor in BST II|M
+Tree Diameter|M
+Convert Binary Search Tree to Sorted Doubly Linked List|M
+Binary Tree Upside Down|M
+Recover a Tree From Preorder Traversal|H
+Binary Tree Maximum Path Sum|H
+Serialize And Deserialize Binary Tree|H
+#Heap / Priority Queue
+Kth Largest Element In a Stream|E
+Last Stone Weight|E
+Take Gifts From the Richest Pile|E
+Final Array State After K Multiplication Operations I|E
+High Five|E
+Minimum Cost to Connect Sticks|M
+Campus Bikes|M
+Rearrange String k Distance Apart|H
+K Closest Points to Origin|M
+Kth Largest Element In An Array|M
+Task Scheduler|M
+Design Twitter|M
+Least Number of Unique Integers after K Removal|M|least-number-of-unique-integers-after-k-removals
+Furthest Building You Can Reach|M
+Minimize Deviation in Array|H
+Maximum Subsequence Score|M
+Single Threaded CPU|M
+Seat Reservation Manager|M
+Process Tasks Using Servers|M
+Find The Kth Largest Integer In The Array|M
+Reorganize String|M
+Longest Happy String|M
+Car Pooling|M
+Range Sum of Sorted Subarray Sums|M
+Maximum Transactions Without Negative Balance|M
+Path With Maximum Minimum Value|M
+Find Median From Data Stream|H
+Maximum Performance of a Team|H
+IPO|H
+Minimum Cost to Hire K Workers|H
+Number of Flowers in Full Bloom|H
+Constrained Subsequence Sum|H
+Find Building Where Alice and Bob Can Meet|H
+#Backtracking
+Sum of All Subsets XOR Total|E|sum-of-all-subset-xor-totals
+Subsets|M
+Combination Sum|M
+Combination Sum II|M
+Combinations|M
+Permutations|M
+Subsets II|M
+Permutations II|M
+Generate Parentheses|M
+Letter Tile Possibilities|M
+Word Search|M
+Palindrome Partitioning|M
+Restore IP Addresses|M
+Letter Combinations of a Phone Number|M
+The k-th Lexicographical String of All Happy Strings of Length n|M|the-k-th-lexicographical-string-of-all-happy-strings-of-length-n
+Matchsticks to Square|M
+Splitting a String Into Descending Consecutive Values|M
+Construct Smallest Number From DI String|M
+Find Unique Binary String|M
+Split a String Into the Max Number of Unique Substrings|M
+Maximum Length of a Concatenated String With Unique Characters|M
+Partition to K Equal Sum Subsets|M
+The Number of Beautiful Subsets|M
+Different Ways to Add Parentheses|M
+Construct the Lexicographically Largest Valid Sequence|M
+Count Number of Maximum Bitwise-OR Subsets|M|count-number-of-maximum-bitwise-or-subsets
+Strobogrammatic Number II|M
+Factor Combinations|M
+Brace Expansion|M
+Word Pattern II|M
+Android Unlock Patterns|M
+N Queens|H
+N Queens II|H
+Maximum Score Words Formed By Letters|H
+Word Break II|H
+Robot Room Cleaner|H
+#Tries
+Count Prefix and Suffix Pairs I|E
+Implement Trie Prefix Tree|M
+Design Add And Search Words Data Structure|M
+Counting Words With a Given Prefix|E
+Remove Sub-Folders from the Filesystem|M|remove-sub-folders-from-the-filesystem
+Extra Characters in a String|M
+Design File System|M
+Word Search II|H
+Sum of Prefix Scores of Strings|H
+Count Prefix and Suffix Pairs II|H
+Design In-Memory File System|H|design-in-memory-file-system
+Design Search Autocomplete System|H
+#Graphs
+Island Perimeter|E
+Verifying An Alien Dictionary|E
+Find the Town Judge|E
+Flood Fill|E
+Count Servers that Communicate|M
+Find Champion II|M
+Number of Islands|M
+Max Area of Island|M
+Maximum Number of Fish in a Grid|M
+Clone Graph|M
+Walls And Gates|M
+Rotting Oranges|M
+Count Sub Islands|M
+Pacific Atlantic Water Flow|M
+Surrounded Regions|M
+Reorder Routes to Make All Paths Lead to The City Zero|M
+Snakes And Ladders|M
+Open The Lock|M
+Find Eventual Safe States|M
+Course Schedule|M
+Course Schedule II|M
+Graph Valid Tree|M
+Course Schedule IV|M
+Check if Move Is Legal|M
+Shortest Bridge|M
+Shortest Path in Binary Matrix|M
+Number of Connected Components In An Undirected Graph|M
+Redundant Connection|M
+Accounts Merge|M
+Find Closest Node to Given Two Nodes|M
+As Far from Land as Possible|M
+Shortest Path with Alternating Colors|M
+Minimum Fuel Cost to Report to the Capital|M
+Minimum Score of a Path Between Two Cities|M
+Number of Closed Islands|M
+Number of Enclaves|M
+Number of Provinces|M
+Regions Cut By Slashes|M
+Minimum Number of Vertices to Reach all Nodes|M
+Is Graph Bipartite?|M
+Count the Number of Complete Components|M
+Evaluate Division|M
+Detonate the Maximum Bombs|M
+Find All Possible Recipes from Given Supplies|M
+Shortest Distance After Road Addition Queries I|M
+Minimum Height Trees|M
+Path with Maximum Gold|M
+Most Profitable Path in a Tree|M
+Find the Celebrity|M
+Kill Process|M
+All Paths from Source Lead to Destination|M
+Web Crawler|M
+Number of Distinct Islands|M
+Parallel Courses|M
+The Maze|M
+The Maze II|M
+Minimum Knight Moves|M
+Number of Islands II|H
+The Maze III|H
+Shortest Distance from All Buildings|H
+Nested List Weight Sum|M
+Maximum Number of Points From Grid Queries|H
+Maximum Number of K-Divisible Components|H|maximum-number-of-k-divisible-components
+Sliding Puzzle|H
+Largest Color Value in a Directed Graph|H
+Minimum Number of Days to Eat N Oranges|H
+Find All People With Secret|H
+Word Ladder|H
+Parallel Courses III|H
+Number of Distinct Islands II|H
+Sentence Similarity II|M
+#Advanced Graphs
+Path with Minimum Effort|M
+Network Delay Time|M
+Reconstruct Itinerary|H
+Min Cost to Connect All Points|M
+Path with Maximum Probability|M
+Find the Safest Path in a Grid|M
+Swim In Rising Water|H
+Alien Dictionary|H
+Trapping Rain Water II|H
+Minimum Obstacle Removal to Reach Corner|H
+Minimum Cost to Make at Least One Valid Path in a Grid|H
+Minimum Time to Visit a Cell In a Grid|H
+Cheapest Flights Within K Stops|M
+Find the City With the Smallest Number of Neighbors at a Threshold Distance|M
+Minimum Cost to Convert String I|M
+Number of Ways to Arrive at Destination|M
+Sequence Reconstruction|M
+Making A Large Island|H
+Minimum Cost Walk in Weighted Graph|H
+Number of Good Paths|H
+Maximum Employees to Be Invited to a Meeting|H
+Remove Max Number of Edges to Keep Graph Fully Traversable|H
+Minimum Number of Days to Disconnect Island|H
+Second Minimum Time to Reach Destination|H
+Find Minimum Diameter After Merging Two Trees|H
+Find Critical and Pseudo Critical Edges in Minimum Spanning Tree|H
+Bus Routes|H
+Build a Matrix With Conditions|H
+Greatest Common Divisor Traversal|H
+Divide Nodes Into the Maximum Number of Groups|H
+#1-D Dynamic Programming
+Climbing Stairs|E
+Min Cost Climbing Stairs|E
+N-th Tribonacci Number|E|n-th-tribonacci-number
+House Robber|M
+House Robber II|M
+Paint House|M
+Paint Fence|M
+4 Keys Keyboard|M
+Handshakes That Don't Cross|H
+Longest Palindromic Substring|M
+Palindromic Substrings|M
+Decode Ways|M
+Coin Change|M
+Maximum Product Subarray|M
+Word Break|M
+Longest Increasing Subsequence|M
+Partition Equal Subset Sum|M
+Triangle|M
+Delete And Earn|M
+Filling Bookcase Shelves|M
+Combination Sum IV|M
+Perfect Squares|M
+Check if There is a Valid Partition For The Array|M
+Maximum Subarray Min Product|M
+Minimum Cost For Tickets|M
+Integer Break|M
+Number of Longest Increasing Subsequence|M
+Russian Doll Envelopes|H
+Stickers to Spell Word|H
+Uncrossed Lines|M
+Solving Questions With Brainpower|M
+Count Ways to Build Good Strings|M
+Ugly Number II|M
+New 21 Game|M
+Best Team with no Conflicts|M
+Longest String Chain|M
+Knight Dialer|M
+Partition Array for Maximum Sum|M
+Largest Divisible Subset|M
+Count Strictly Increasing Subarrays|M
+Sentence Screen Fitting|M
+Stone Game III|H
+Concatenated Words|H
+Maximize Score after N Operations|H
+Find the Longest Valid Obstacle Course at Each Position|H
+Minimum Number of Removals to Make Mountain Array|H
+Count all Valid Pickup and Delivery Options|H
+Number of Ways to Divide a Long Corridor|H
+Maximum Sum of 3 Non-Overlapping Subarrays|H|maximum-sum-of-3-non-overlapping-subarrays
+Maximum Profit in Job Scheduling|H
+Student Attendance Record II|H
+Optimal Account Balancing|H
+Valid Palindrome III|H
+Encode String with Shortest Length|H
+Coin Path|H
+#2-D Dynamic Programming
+Unique Paths|M
+Unique Paths II|M
+Minimum Path Sum|M
+Maximum Number of Points with Cost|M
+Longest Common Subsequence|M
+Longest Palindromic Subsequence|M
+Length of Longest Fibonacci Subsequence|M
+Last Stone Weight II|M
+Best Time to Buy And Sell Stock With Cooldown|M
+Coin Change II|M
+Target Sum|M
+Interleaving String|M
+Stone Game|M
+Stone Game II|M
+Longest Increasing Path In a Matrix|H
+Maximal Square|M
+Count Square Submatrices with All Ones|M
+Ones and Zeroes|M
+2 Keys Keyboard|M
+Maximum Alternating Subsequence Sum|M
+Distinct Subsequences|H
+Edit Distance|M
+Number of Dice Rolls with Target Sum|M
+Minimum Falling Path Sum|M
+Out of Boundary Paths|M
+Longest Ideal Subsequence|M
+Count Number of Teams|M
+Shortest Common Supersequence|H
+Count Vowels Permutation|H
+Burst Balloons|H
+Number of Ways to Rearrange Sticks With K Sticks Visible|H
+Regular Expression Matching|H
+Flip String to Monotone Increasing|M
+Maximum Value of K Coins from Piles|H
+Number of Music Playlists|H
+Number of Ways to Form a Target String Given a Dictionary|H
+Profitable Schemes|H
+Minimum Cost to Cut a Stick|H
+Painting the Walls|H
+Number of Ways to Stay in the Same Place After Some Steps|H
+String Compression II|H
+Minimum Difficulty of a Job Schedule|H
+Arithmetic Slices II|H|arithmetic-slices-ii-subsequence
+K Inverse Pairs Array|H
+Cherry Pickup|H
+Cherry Pickup II|H
+Minimum Falling Path Sum II|H
+Freedom Trail|H
+Split Array With Same Average|H
+Paint House II|H
+#Greedy
+Buy Two Chocolates|E
+Lemonade Change|E
+Minimum Number of Moves to Seat Everyone|E
+Maximum Odd Binary Number|E
+Maximum Nesting Depth of the Parentheses|E
+Check if One String Swap Can Make Strings Equal|E
+How Many Apples Can You Put into the Basket|E
+Minimum Operations to Make Binary Array Elements Equal to One I|M
+Buildings With an Ocean View|M
+Minimum Length of String After Operations|M
+Construct K Palindrome Strings|M
+Separate Black and White Balls|M
+Minimum Increment to Make Array Unique|M
+Maximum Subarray|M
+Maximum Absolute Sum of Any Subarray|M
+Maximum Sum Circular Subarray|M
+Minimum Swaps to Group All 1's Together II|M
+Longest Turbulent Subarray|M
+Jump Game|M
+Jump Game II|M
+Jump Game VII|M
+Gas Station|M
+Hand of Straights|M
+Minimum Number of Changes to Make Binary String Beautiful|M
+Minimize Maximum of Array|M
+Maximize Y-Sum by Picking a Triplet of Distinct X-Values|M
+Minimum Difference Between Largest and Smallest Value in Three Moves|M
+Maximum Total Importance of Roads|M
+Minimum Number of Pushes to Type Word II|M
+Dota2 Senate|M
+Maximum Points You Can Obtain From Cards|M
+Merge Triplets to Form Target Triplet|M
+Partition Labels|M
+Valid Parenthesis String|M
+Check if a Parentheses String Can Be Valid|M
+Eliminate Maximum Number of Monsters|M
+Two City Scheduling|M
+Maximum Length of Pair Chain|M
+Best Sightseeing Pair|M
+Make Lexicographically Smallest Array by Swapping Elements|M
+Minimum Deletions to Make Character Frequencies Unique|M
+Minimum Deletions to Make String Balanced|M
+Candy|H
+Remove Colored Pieces if Both Neighbors are the Same Color|M
+Maximum Score From Removing Substrings|M
+Maximum Element After Decreasing and Rearranging|M
+Number of Laser Beams in a Bank|M
+Reveal Cards In Increasing Order|M
+Construct String With Repeat Limit|M
+Find Valid Matrix Given Row and Column Sums|M
+Score After Flipping Matrix|M
+Flip Columns For Maximum Number of Equal Rows|M
+Maximum Matrix Sum|M
+Make Two Arrays Equal by Reversing Subarrays|E
+Shortest Subarray to be Removed to Make Array Sorted|M
+Max Chunks To Make Sorted|M
+Next Permutation|M
+Maximum Swap|M
+Maximal Score After Applying K Operations|M
+Maximum Frequency After Subarray Operation|M
+Put Boxes Into the Warehouse I|M
+Put Marbles in Bags|H
+Minimum Number of K Consecutive Bit Flips|H
+Maximum Score of a Good Subarray|H
+Find the Maximum Sum of Node Values|H
+Minimum Number of Increments on Subarrays to Form a Target Array|H
+Apply Operations to Maximize Score|H
+#Intervals
+Missing Ranges|E
+Remove Interval|M
+Add Bold Tag in String|M
+Insert Interval|M
+Merge Intervals|M
+Non Overlapping Intervals|M
+Interval List Intersections|M
+Meeting Rooms|E
+Meeting Rooms II|M
+Meeting Rooms III|H
+Divide Intervals Into Minimum Number of Groups|M
+Remove Covered Intervals|M
+Minimum Number of Arrows to Burst Balloons|M
+The Number of the Smallest Unoccupied Chair|M
+Check if Grid can be Cut into Sections|M
+My Calendar I|M
+My Calendar II|M
+Count Days Without Meetings|M
+Minimum Interval to Include Each Query|H
+Data Stream as Disjoint Intervals|H
+Employee Free Time|H
+#Math & Geometry
+Excel Sheet Column Title|E
+Greatest Common Divisor of Strings|E
+Insert Greatest Common Divisors in Linked List|M
+Count Odd Numbers in an Interval Range|E
+Matrix Diagonal Sum|E
+Calculate Money in Leetcode Bank|E
+Largest Odd Number in String|E
+Transpose Matrix|E
+Image Smoother|E
+Count of Matches in Tournament|E
+Water Bottles|E
+Largest Local Values in a Matrix|E
+Power of Four|E
+Lucky Numbers in a Matrix|E
+Armstrong Number|E
+Count Substrings with Only One Distinct Letter|E
+Guess the Majority in a Hidden Array|M
+Maximum Number of Ones|H
+Maximum Points on a Line|H|max-points-on-a-line
+Magic Squares In Grid|M
+Rotate Image|M
+Spiral Matrix|M
+Spiral Matrix II|M
+Spiral Matrix III|M
+Spiral Matrix IV|M
+Set Matrix Zeroes|M
+Happy Number|E
+Plus One|E
+Palindrome Number|E
+Ugly Number|E
+Convert 1D Array Into 2D Array|E
+Shift 2D Grid|E
+Roman to Integer|E
+Integer to Roman|M
+Pow(x, n)|M
+Find the Punishment Number of an Integer|M
+Check if Number is a Sum of Powers of Three|M
+Multiply Strings|M
+Detect Squares|M
+Robot Bounded In Circle|M
+Walking Robot Simulation|M
+Zigzag Conversion|M
+Rotating the Box|M
+Sum of Square Numbers|M
+Find Missing Observations|M
+Minimum Time Difference|M
+Minimum Operations to Make a Uni-Value Grid|M|minimum-operations-to-make-a-uni-value-grid
+Largest Submatrix With Rearrangements|M
+Wildest Vertical Area Between Two Points Containing No Points|E|widest-vertical-area-between-two-points-containing-no-points
+Tuple with Same Product|M
+Lexicographical Numbers|M
+Find the Winner of the Circular Game|M
+Count Total Number of Colored Cells|M
+Prime Subtraction Operation|M
+Closest Prime Numbers in Range|M
+Count Primes|M
+Distribute Candies Among Children II|M
+Line Reflection|M
+Minimum Factorization|M
+Minimum Number of One Bit Operations to Make Integers Zero|H|minimum-one-bit-operations-to-make-integers-zero
+K-th Smallest in Lexicographical Order|H|k-th-smallest-in-lexicographical-order
+Integer to English Words|H
+Best Meeting Point|H
+#Bit Manipulation
+Single Number|E
+Count Triplets with Even XOR Set Bits I|E
+Single Number III|M
+Number of 1 Bits|E
+Counting Bits|E
+Add Binary|E
+Minimum Bit Flips to Convert Number|E
+Reverse Bits|E
+Missing Number|E
+Shuffle the Array|E
+Add to Array-Form of Integer|E|add-to-array-form-of-integer
+Find the Difference|E
+Power of Two|E
+Sum of Two Integers|M
+Reverse Integer|M
+Bitwise XOR of All Pairings|M
+Largest Combination With Bitwise AND Greater Than Zero|M
+XOR Queries of a Subarray|M
+Maximum XOR for Each Query|M
+Neighboring Bitwise XOR|M
+Shortest Subarray With OR at Least K II|M
+Bitwise AND of Numbers Range|M
+Find Kth Bit in Nth Binary String|M
+Count Triplets That Can Form Two Arrays of Equal XOR|M
+Minimum Array End|M
+Find if Array Can Be Sorted|M
+Longest Subarray With Maximum Bitwise AND|M
+Longest Nice Subarray|M
+Find the Longest Substring Containing Vowels in Even Counts|M
+Minimize XOR|M
+IP to CIDR|M
+#JavaScript
+Create Hello World Function|E
+Counter|E
+Counter II|E
+Apply Transform over each Element in Array|E
+Filter Elements from Array|E
+Array Reduce Transformation|E
+Function Composition|E
+Allow One Function Call|E
+Memoize|M
+Curry|M
+Sleep|E
+Promise Time Limit|E
+Promise Pool|M
+Cache With Time Limit|M
+Debounce|M
+Throttle|M
+JSON Deep Equal|M
+Convert Object to JSON String|M
+Array of Objects to Matrix|M
+Difference Between Two Objects|M|differences-between-two-objects
+Chunk Array|E
+Flatten Deeply Nested Array|M
+Array Prototype Last|E
+Group By|M
+Check if Object Instance of Class|M
+Call Function with Custom Context|M
+Event Emitter|M
+Array Wrapper|E
+Generate Fibonacci Sequence|E
+Nested Array Generator|M</script>
+<script id="raw150" type="text/plain">Contains Duplicate
+Valid Anagram
+Two Sum
+Group Anagrams
+Top K Frequent Elements
+Encode and Decode Strings
+Product of Array Except Self
+Valid Sudoku
+Longest Consecutive Sequence
+Valid Palindrome
+Two Sum II Input Array Is Sorted
+3Sum
+Container With Most Water
+Trapping Rain Water
+Best Time to Buy And Sell Stock
+Longest Substring Without Repeating Characters
+Longest Repeating Character Replacement
+Permutation In String
+Minimum Window Substring
+Sliding Window Maximum
+Valid Parentheses
+Min Stack
+Evaluate Reverse Polish Notation
+Daily Temperatures
+Car Fleet
+Largest Rectangle In Histogram
+Binary Search
+Search a 2D Matrix
+Koko Eating Bananas
+Find Minimum In Rotated Sorted Array
+Search In Rotated Sorted Array
+Time Based Key Value Store
+Median of Two Sorted Arrays
+Reverse Linked List
+Merge Two Sorted Lists
+Linked List Cycle
+Reorder List
+Remove Nth Node From End of List
+Copy List With Random Pointer
+Add Two Numbers
+Find The Duplicate Number
+LRU Cache
+Merge K Sorted Lists
+Reverse Nodes In K Group
+Invert Binary Tree
+Maximum Depth of Binary Tree
+Diameter of Binary Tree
+Balanced Binary Tree
+Same Tree
+Subtree of Another Tree
+Lowest Common Ancestor of a Binary Search Tree
+Binary Tree Level Order Traversal
+Binary Tree Right Side View
+Count Good Nodes In Binary Tree
+Validate Binary Search Tree
+Kth Smallest Element In a Bst
+Construct Binary Tree From Preorder And Inorder Traversal
+Binary Tree Maximum Path Sum
+Serialize And Deserialize Binary Tree
+Kth Largest Element In a Stream
+Last Stone Weight
+K Closest Points to Origin
+Kth Largest Element In An Array
+Task Scheduler
+Design Twitter
+Find Median From Data Stream
+Subsets
+Combination Sum
+Combination Sum II
+Permutations
+Subsets II
+Generate Parentheses
+Word Search
+Palindrome Partitioning
+Letter Combinations of a Phone Number
+N Queens
+Implement Trie Prefix Tree
+Design Add And Search Words Data Structure
+Word Search II
+Number of Islands
+Max Area of Island
+Clone Graph
+Walls And Gates
+Rotting Oranges
+Pacific Atlantic Water Flow
+Surrounded Regions
+Course Schedule
+Course Schedule II
+Graph Valid Tree
+Number of Connected Components In An Undirected Graph
+Redundant Connection
+Word Ladder
+Network Delay Time
+Reconstruct Itinerary
+Min Cost to Connect All Points
+Swim In Rising Water
+Alien Dictionary
+Cheapest Flights Within K Stops
+Climbing Stairs
+Min Cost Climbing Stairs
+House Robber
+House Robber II
+Longest Palindromic Substring
+Palindromic Substrings
+Decode Ways
+Coin Change
+Maximum Product Subarray
+Word Break
+Longest Increasing Subsequence
+Partition Equal Subset Sum
+Unique Paths
+Longest Common Subsequence
+Best Time to Buy And Sell Stock With Cooldown
+Coin Change II
+Target Sum
+Interleaving String
+Longest Increasing Path In a Matrix
+Distinct Subsequences
+Edit Distance
+Burst Balloons
+Regular Expression Matching
+Maximum Subarray
+Jump Game
+Jump Game II
+Gas Station
+Hand of Straights
+Merge Triplets to Form Target Triplet
+Partition Labels
+Valid Parenthesis String
+Insert Interval
+Merge Intervals
+Non Overlapping Intervals
+Meeting Rooms
+Meeting Rooms II
+Minimum Interval to Include Each Query
+Rotate Image
+Spiral Matrix
+Set Matrix Zeroes
+Happy Number
+Plus One
+Pow(x, n)
+Multiply Strings
+Detect Squares
+Single Number
+Number of 1 Bits
+Counting Bits
+Reverse Bits
+Missing Number
+Sum of Two Integers
+Reverse Integer</script>
+<script>
+(function(){
+  "use strict";
+  var slugify = function(t){
+    return t.toLowerCase().replace(/[^a-z0-9 ]+/g,"").trim().replace(/\s+/g,"-");
+  };
+  var DIFF = {E:"Easy", M:"Medium", H:"Hard"};
+
+  // ---- parse embedded dataset ----
+  var raw = document.getElementById("raw").textContent;
+  var set150 = {};
+  document.getElementById("raw150").textContent.split("\n").forEach(function(l){
+    l = l.trim(); if(l) set150[l] = 1;
+  });
+
+  var topics = [], cur = null, problems = [];
+  raw.split("\n").forEach(function(line){
+    if(!line) return;
+    if(line.charAt(0) === "#"){
+      cur = {name:line.slice(1), items:[]};
+      topics.push(cur);
+      return;
+    }
+    var p = line.split("|");
+    var title = p[0], d = p[1], slug = p[2] || slugify(title);
+    var item = {t:title, d:d, s:slug, n150:!!set150[title], topic:cur.name};
+    cur.items.push(item);
+    problems.push(item);
+  });
+
+  // ---- state ----
+  var solved = Object.create(null), starred = Object.create(null);
+  var filters = {q:"", scope:"all", diff:"all", status:"all", topic:"all"};
+
+  // ---- build DOM ----
+  var list = document.getElementById("list");
+  var frag = document.createDocumentFragment();
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>';
+  var ICON_STAR  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85z" stroke-linejoin="round"/></svg>';
+
+  topics.forEach(function(tp){
+    var sec = document.createElement("section");
+    sec.className = "topic";
+    sec.dataset.open = "true";
+    sec.dataset.name = tp.name;
+
+    var head = document.createElement("button");
+    head.className = "topic-head";
+    head.type = "button";
+    head.setAttribute("aria-expanded","true");
+    head.innerHTML =
+      '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5L6 8.5 10 4.5"/></svg>' +
+      '<span class="topic-name"></span>' +
+      '<span class="topic-meter"><span class="bar"><i style="width:0%"></i></span></span>' +
+      '<span class="topic-count"></span>';
+    head.querySelector(".topic-name").textContent = tp.name;
+    head.addEventListener("click", function(){
+      var open = sec.dataset.open === "true";
+      sec.dataset.open = open ? "false" : "true";
+      head.setAttribute("aria-expanded", open ? "false" : "true");
+    });
+    sec.appendChild(head);
+
+    var rows = document.createElement("div");
+    rows.className = "rows";
+
+    tp.items.forEach(function(it){
+      var row = document.createElement("div");
+      row.className = "row";
+      row.dataset.slug = it.s;
+
+      var tickBtn = document.createElement("button");
+      tickBtn.className = "tickbtn";
+      tickBtn.type = "button";
+      tickBtn.setAttribute("aria-label", "Mark " + it.t + " solved");
+      tickBtn.setAttribute("aria-pressed", "false");
+      tickBtn.innerHTML = '<span class="tick">' + ICON_CHECK + '</span>';
+      tickBtn.addEventListener("click", function(){
+        if(solved[it.s]){ delete solved[it.s]; } else { solved[it.s] = 1; }
+        row.classList.toggle("done", !!solved[it.s]);
+        tickBtn.setAttribute("aria-pressed", solved[it.s] ? "true" : "false");
+        refresh();
+        persist();
+      });
+
+      var starBtn = document.createElement("button");
+      starBtn.className = "starbtn";
+      starBtn.type = "button";
+      starBtn.setAttribute("aria-label", "Add " + it.t + " to revise list");
+      starBtn.setAttribute("aria-pressed", "false");
+      starBtn.innerHTML = ICON_STAR;
+      starBtn.addEventListener("click", function(){
+        if(starred[it.s]){ delete starred[it.s]; } else { starred[it.s] = 1; }
+        row.classList.toggle("starred", !!starred[it.s]);
+        starBtn.setAttribute("aria-pressed", starred[it.s] ? "true" : "false");
+        refresh();
+        persist();
+      });
+
+      var a = document.createElement("a");
+      a.className = "title";
+      a.href = "https://leetcode.com/problems/" + it.s + "/";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = it.t;
+      if(it.n150){
+        var tag = document.createElement("span");
+        tag.className = "tag150 mono";
+        tag.textContent = "150";
+        tag.title = "Part of the NeetCode 150";
+        a.appendChild(tag);
+      }
+
+      var d = document.createElement("span");
+      d.className = "diff d-" + it.d;
+      d.textContent = DIFF[it.d];
+
+      var sol = document.createElement("a");
+      sol.className = "solve";
+      sol.href = "https://neetcode.io/solutions/" + it.s;
+      sol.target = "_blank";
+      sol.rel = "noopener noreferrer";
+      sol.textContent = "solution ↗";
+
+      row.appendChild(tickBtn);
+      row.appendChild(starBtn);
+      row.appendChild(a);
+      row.appendChild(d);
+      row.appendChild(sol);
+      rows.appendChild(row);
+      it.el = row;
+      it.tickBtn = tickBtn;
+      it.starBtn = starBtn;
+    });
+
+    sec.appendChild(rows);
+    frag.appendChild(sec);
+    tp.el = sec;
+    tp.countEl = head.querySelector(".topic-count");
+    tp.barEl = head.querySelector(".topic-meter i");
+
+    var opt = document.createElement("option");
+    opt.value = tp.name;
+    opt.textContent = tp.name + "  (" + tp.items.length + ")";
+    document.getElementById("topicSel").appendChild(opt);
+  });
+  list.appendChild(frag);
+
+  var emptyMsg = document.createElement("p");
+  emptyMsg.className = "empty";
+  emptyMsg.textContent = "No problems match these filters.";
+  emptyMsg.hidden = true;
+  list.appendChild(emptyMsg);
+
+  // ---- filtering + stats ----
+  var totals = {E:0, M:0, H:0};
+  problems.forEach(function(p){ totals[p.d]++; });
+  document.getElementById("totalCount").textContent = problems.length;
+  document.getElementById("search").placeholder = "Search " + problems.length + " problems…";
+
+  function matches(p){
+    if(filters.scope === "150" && !p.n150) return false;
+    if(filters.diff !== "all" && p.d !== filters.diff) return false;
+    if(filters.topic !== "all" && p.topic !== filters.topic) return false;
+    if(filters.status === "done" && !solved[p.s]) return false;
+    if(filters.status === "todo" && solved[p.s]) return false;
+    if(filters.status === "star" && !starred[p.s]) return false;
+    if(filters.q && p.t.toLowerCase().indexOf(filters.q) === -1) return false;
+    return true;
+  }
+
+  function refresh(){
+    var shown = 0, sTot = 0, stars = 0;
+    var byD = {E:0, M:0, H:0};
+
+    topics.forEach(function(tp){
+      var vis = 0, done = 0;
+      tp.items.forEach(function(it){
+        var ok = matches(it);
+        it.el.classList.toggle("hide", !ok);
+        if(ok){ vis++; if(solved[it.s]) done++; }
+      });
+      tp.el.hidden = vis === 0;
+      tp.countEl.textContent = done + " / " + vis;
+      tp.barEl.style.width = vis ? (done / vis * 100).toFixed(1) + "%" : "0%";
+      shown += vis;
+    });
+
+    problems.forEach(function(p){
+      if(solved[p.s]){ sTot++; byD[p.d]++; }
+      if(starred[p.s]) stars++;
+    });
+
+    document.getElementById("solvedCount").textContent = sTot;
+    document.getElementById("starCount").textContent = stars;
+    document.getElementById("ring").setAttribute("stroke-dashoffset",
+      (113.1 * (1 - sTot / problems.length)).toFixed(2));
+
+    ["E","M","H"].forEach(function(k){
+      document.getElementById("v" + k).textContent = byD[k] + " / " + totals[k];
+      document.getElementById("b" + k).style.width = (byD[k] / totals[k] * 100).toFixed(1) + "%";
+      document.getElementById("c" + k).textContent = totals[k];
+    });
+    document.getElementById("vS").textContent = stars + " starred";
+    document.getElementById("bS").style.width = (stars / problems.length * 100).toFixed(1) + "%";
+
+    emptyMsg.hidden = shown !== 0;
+    document.getElementById("shownCount").textContent = shown + " shown";
+  }
+
+  function applyState(){
+    problems.forEach(function(p){
+      var d = !!solved[p.s], st = !!starred[p.s];
+      p.el.classList.toggle("done", d);
+      p.el.classList.toggle("starred", st);
+      p.tickBtn.setAttribute("aria-pressed", d ? "true" : "false");
+      p.starBtn.setAttribute("aria-pressed", st ? "true" : "false");
+    });
+    refresh();
+  }
+
+  // ---- controls ----
+  function wireSeg(id, key){
+    var box = document.getElementById(id);
+    box.addEventListener("click", function(e){
+      var b = e.target.closest("button");
+      if(!b) return;
+      [].forEach.call(box.querySelectorAll("button"), function(x){
+        x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      });
+      filters[key] = b.dataset.v;
+      refresh();
+    });
+  }
+  wireSeg("segScope","scope");
+  wireSeg("segDiff","diff");
+  wireSeg("segStatus","status");
+
+  document.getElementById("topicSel").addEventListener("change", function(e){
+    filters.topic = e.target.value;
+    refresh();
+  });
+
+  var searchT;
+  document.getElementById("search").addEventListener("input", function(e){
+    clearTimeout(searchT);
+    var v = e.target.value.trim().toLowerCase();
+    searchT = setTimeout(function(){ filters.q = v; refresh(); }, 120);
+  });
+
+  var toggleAll = document.getElementById("toggleAll");
+  toggleAll.addEventListener("click", function(){
+    var collapse = toggleAll.textContent.indexOf("Collapse") === 0;
+    topics.forEach(function(tp){
+      tp.el.dataset.open = collapse ? "false" : "true";
+      tp.el.querySelector(".topic-head").setAttribute("aria-expanded", collapse ? "false" : "true");
+    });
+    toggleAll.textContent = collapse ? "Expand all" : "Collapse all";
+  });
+
+  // ---- messages ----
+  var toast = document.getElementById("toast"), toastT;
+  function say(msg){
+    toast.textContent = msg;
+    toast.hidden = false;
+    clearTimeout(toastT);
+    toastT = setTimeout(function(){ toast.hidden = true; }, 4500);
+  }
+
+  /* =====================================================================
+     PERSISTENCE — a real progress.json on disk
+
+     Primary: the File System Access API. You point the page at a .json
+     file once; from then on every tick is read from and written to that
+     exact file, even when the page is opened straight off disk. Browsers
+     require one click per page load to re-grant write access, so the
+     card at the top of the page asks for it and nothing else does.
+
+     A mirror is always kept in this browser's storage, so your ticks are
+     never lost in the gap before you reconnect the file. Whichever copy
+     is newer wins, and the file is brought back up to date immediately.
+
+     If the page is served by the bundled server.py, that server owns
+     progress.json instead and no clicks are needed at all.
+     ===================================================================== */
+
+  var LS_KEY = "neetcode-grind-ledger/v1";
+  var IDB_NAME = "neetcode-grind-ledger", IDB_STORE = "handles";
+  var FILE_NAME = "progress.json";
+
+  var backend = "none";        // "server" | "file" | "local" | "none"
+  var fileHandle = null;
+  var saveT = null, saving = false, dirty = false;
+  var lastSavedAt = null;
+
+  var statusEl = document.getElementById("storeStatus");
+  var statusText = document.getElementById("storeText");
+  var card = document.getElementById("fileCard");
+  var cardTitle = document.getElementById("fcTitle");
+  var cardBody = document.getElementById("fcBody");
+  var cardActions = document.getElementById("fcActions");
+  var supportsFS = typeof window.showSaveFilePicker === "function" &&
+                   typeof window.showOpenFilePicker === "function";
+
+  function snapshot(){
+    return {
+      app: "neetcode-grind-ledger",
+      version: 1,
+      savedAt: new Date().toISOString(),
+      total: problems.length,
+      solved: Object.keys(solved).sort(),
+      starred: Object.keys(starred).sort()
+    };
+  }
+  function snapshotText(){ return JSON.stringify(snapshot(), null, 2); }
+
+  function valid(d){
+    return d && typeof d === "object" && (d.solved || d.starred);
+  }
+  function stamp(d){
+    var t = d && d.savedAt ? Date.parse(d.savedAt) : 0;
+    return isNaN(t) ? 0 : t;
+  }
+  function newer(a, b){
+    if(!valid(a)) return valid(b) ? b : null;
+    if(!valid(b)) return a;
+    return stamp(b) > stamp(a) ? b : a;
+  }
+  function apply(d){
+    solved = Object.create(null);
+    starred = Object.create(null);
+    (d.solved || []).forEach(function(k){ solved[k] = 1; });
+    (d.starred || []).forEach(function(k){ starred[k] = 1; });
+    lastSavedAt = d.savedAt || null;
+    applyState();
+  }
+  function count(){ return Object.keys(solved).length; }
+
+  // ---------- mirror in this browser ----------
+  function readLocal(){
+    try{
+      var t = localStorage.getItem(LS_KEY);
+      return t ? JSON.parse(t) : null;
+    }catch(e){ return null; }
+  }
+  function writeLocal(text){
+    try{ localStorage.setItem(LS_KEY, text); }catch(e){}
+  }
+
+  // ---------- remember the file handle across page loads ----------
+  function idb(fn){
+    return new Promise(function(res, rej){
+      if(!window.indexedDB){ rej(new Error("no indexeddb")); return; }
+      var open = indexedDB.open(IDB_NAME, 1);
+      open.onupgradeneeded = function(){ open.result.createObjectStore(IDB_STORE); };
+      open.onerror = function(){ rej(open.error); };
+      open.onsuccess = function(){
+        var db = open.result, req;
+        try{
+          var tx = db.transaction(IDB_STORE, "readwrite");
+          req = fn(tx.objectStore(IDB_STORE));
+          tx.oncomplete = function(){ db.close(); res(req ? req.result : null); };
+          tx.onerror = function(){ db.close(); rej(tx.error); };
+        }catch(err){ db.close(); rej(err); }
+      };
+    });
+  }
+  function rememberHandle(h){ return idb(function(st){ return st.put(h, "progress"); }).catch(function(){}); }
+  function recallHandle(){ return idb(function(st){ return st.get("progress"); }).catch(function(){ return null; }); }
+
+  // ---------- writers ----------
+  function writeServer(text){
+    return fetch("api/progress", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: text
+    }).then(function(r){ if(!r.ok) throw new Error("server said " + r.status); });
+  }
+  function writeFile(text){
+    return fileHandle.createWritable().then(function(w){
+      return w.write(text).then(function(){ return w.close(); });
+    });
+  }
+
+  function persist(){
+    dirty = true;
+    statusEl.classList.add("pending");
+    clearTimeout(saveT);
+    saveT = setTimeout(flush, 300);
+  }
+
+  function flush(){
+    if(saving || !dirty) return;
+    saving = true;
+    dirty = false;
+    var snap = snapshot();
+    var text = JSON.stringify(snap, null, 2);
+    writeLocal(text);
+    lastSavedAt = snap.savedAt;
+
+    var job;
+    if(backend === "server") job = writeServer(text);
+    else if(backend === "file" && fileHandle) job = writeFile(text);
+    else job = Promise.resolve();
+
+    job.then(function(){
+      saving = false;
+      statusEl.classList.remove("pending");
+      if(backend === "file") describeConnected();
+      if(dirty) flush();
+    }, function(err){
+      saving = false;
+      statusEl.classList.remove("pending");
+      if(backend === "file"){
+        fileHandle = null;
+        backend = "local";
+        setPill("local", "Saved in this browser");
+        showCard("reconnect-lost", err && err.message);
+      } else {
+        say("Could not save: " + (err && err.message ? err.message : "unknown error"));
+      }
+    });
+  }
+
+  window.addEventListener("beforeunload", function(){ if(dirty) flush(); });
+
+  // ---------- status pill ----------
+  function setPill(state, text){
+    backend = state;
+    statusEl.dataset.state = (state === "local" || state === "none") ? "off" : "on";
+    statusText.textContent = text;
+  }
+
+  // ---------- the file card ----------
+  function button(label, primary, fn){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = primary ? "cta" : "ghost";
+    b.textContent = label;
+    b.addEventListener("click", fn);
+    return b;
+  }
+
+  function showCard(state, detail){
+    card.hidden = false;
+    card.dataset.state = state;
+    cardActions.textContent = "";
+
+    if(state === "connected"){
+      cardTitle.textContent = "Writing to " + fileHandle.name;
+      cardBody.textContent = "Every tick is read from and written to that file. " +
+        (lastSavedAt ? "Last saved " + new Date(lastSavedAt).toLocaleTimeString() + "." : "");
+      cardActions.appendChild(button("Change file…", false, createFile));
+      return;
+    }
+
+    if(state === "server"){
+      cardTitle.textContent = "Writing to progress.json on this machine";
+      cardBody.textContent = "server.py owns the file, so nothing here needs a click.";
+      return;
+    }
+
+    if(state === "reconnect"){
+      cardTitle.textContent = "Reconnect " + (detail || FILE_NAME);
+      cardBody.textContent = "Your browser asks permission once per visit before a page may write to a file. " +
+        "Until you allow it, ticks are held in this browser and copied over the moment you reconnect.";
+      cardActions.appendChild(button("Reconnect " + (detail || FILE_NAME), true, reconnect));
+      cardActions.appendChild(button("Use a different file…", false, openFile));
+      return;
+    }
+
+    if(state === "reconnect-lost"){
+      cardTitle.textContent = "Lost the connection to your file";
+      cardBody.textContent = (detail ? detail + ". " : "") +
+        "Ticks are still safe in this browser. Point the page at the file again to resume writing.";
+      cardActions.appendChild(button("Open progress.json…", true, openFile));
+      cardActions.appendChild(button("Create a new file…", false, createFile));
+      return;
+    }
+
+    if(state === "unsupported"){
+      cardTitle.textContent = "Saved in this browser";
+      cardBody.textContent = "This browser cannot let a page write files directly — that needs Chrome or Edge on " +
+        "desktop. Your progress still survives reloads here, and Export gives you the same JSON by hand.";
+      cardActions.appendChild(button("Export progress.json", false, doExport));
+      return;
+    }
+
+    // "setup"
+    cardTitle.textContent = "Keep your progress in a JSON file";
+    cardBody.textContent = "Choose a file once. From then on every tick is written straight into it, and reopening " +
+      "this page reads your progress back out of it.";
+    cardActions.appendChild(button("Create progress.json", true, createFile));
+    cardActions.appendChild(button("Open an existing file…", false, openFile));
+  }
+
+  function describeConnected(){
+    if(card.dataset.state === "connected") showCard("connected");
+  }
+
+  // ---------- connect / reconnect ----------
+  function adoptHandle(h, fileSnap){
+    fileHandle = h;
+    setPill("file", "Reading and writing " + h.name);
+    rememberHandle(h);
+
+    var localSnap = readLocal();
+    var best = newer(fileSnap, localSnap);
+    if(valid(best)) apply(best);
+
+    showCard("connected");
+
+    // If what we hold is newer than the file (or the file was empty), write it now.
+    if(!valid(fileSnap) || best !== fileSnap){
+      dirty = true;
+      flush();
+      say(valid(fileSnap) ? "Merged in newer progress and updated " + h.name + "."
+                          : "Wrote " + count() + " solved into " + h.name + ".");
+    } else {
+      say("Loaded " + count() + " solved from " + h.name + ".");
+    }
+  }
+
+  function readHandle(h){
+    return h.getFile().then(function(f){ return f.text(); }).then(function(t){
+      try{ return JSON.parse(t); }catch(e){ return null; }
+    }, function(){ return null; });
+  }
+
+  function createFile(){
+    if(!supportsFS){ say("This browser cannot write files directly."); return; }
+    window.showSaveFilePicker({
+      suggestedName: FILE_NAME,
+      types: [{description:"Progress JSON", accept:{"application/json":[".json"]}}]
+    }).then(function(h){
+      readHandle(h).then(function(snap){ adoptHandle(h, snap); });
+    }).catch(function(err){
+      if(err && err.name === "AbortError") return;
+      say("Could not open that file: " + (err && err.message ? err.message : "blocked by the browser"));
+    });
+  }
+
+  function openFile(){
+    if(!supportsFS){ say("This browser cannot write files directly."); return; }
+    window.showOpenFilePicker({
+      multiple: false,
+      types: [{description:"Progress JSON", accept:{"application/json":[".json"]}}]
+    }).then(function(hs){
+      var h = hs[0];
+      return h.requestPermission({mode:"readwrite"}).then(function(perm){
+        if(perm !== "granted"){ say("Write permission denied for that file."); return; }
+        readHandle(h).then(function(snap){ adoptHandle(h, snap); });
+      });
+    }).catch(function(err){
+      if(err && err.name === "AbortError") return;
+      say("Could not open that file: " + (err && err.message ? err.message : "blocked by the browser"));
+    });
+  }
+
+  var pendingHandle = null;
+  function reconnect(){
+    if(!pendingHandle){ createFile(); return; }
+    pendingHandle.requestPermission({mode:"readwrite"}).then(function(perm){
+      if(perm !== "granted"){
+        say("Still saving in this browser only. Reconnect whenever you like.");
+        return;
+      }
+      var h = pendingHandle;
+      pendingHandle = null;
+      readHandle(h).then(function(snap){ adoptHandle(h, snap); });
+    }, function(){ createFile(); });
+  }
+
+  // ---------- boot ----------
+  function boot(){
+    // Restore instantly from the browser mirror so nothing looks lost.
+    var localSnap = readLocal();
+    if(valid(localSnap)) apply(localSnap);
+    setPill("local", "Saved in this browser");
+
+    var canServer = location.protocol === "http:" || location.protocol === "https:";
+    var serverProbe = canServer
+      ? fetch("api/progress", {headers:{"Accept":"application/json"}}).then(function(r){
+          if(!r.ok || (r.headers.get("content-type") || "").indexOf("json") === -1) throw new Error("no server");
+          return r.json();
+        })
+      : Promise.reject(new Error("not served"));
+
+    serverProbe.then(function(d){
+      setPill("server", "Writing to progress.json on this machine");
+      var best = newer(d, localSnap);
+      if(valid(best)) apply(best);
+      showCard("server");
+      if(valid(localSnap) && best === localSnap && stamp(localSnap) > stamp(d)){ dirty = true; flush(); }
+    }, function(){
+      if(!supportsFS){ showCard("unsupported"); return; }
+      recallHandle().then(function(h){
+        if(!h){ showCard("setup"); return; }
+        h.queryPermission({mode:"readwrite"}).then(function(perm){
+          if(perm === "granted"){
+            readHandle(h).then(function(snap){ adoptHandle(h, snap); });
+          } else {
+            pendingHandle = h;
+            showCard("reconnect", h.name);
+          }
+        }, function(){ showCard("setup"); });
+      }, function(){ showCard("setup"); });
+    });
+  }
+
+  // ---- export / import ----
+  function fallbackDownload(text){
+    var blob = new Blob([text], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = FILE_NAME;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function doExport(){
+    var text = snapshotText();
+    var api = (window.claude && typeof window.claude.use === "function")
+      ? window.claude.use("downloads") : null;
+    if(api && typeof api.then === "function"){
+      api.then(function(dl){
+        if(!dl){ fallbackDownload(text); return; }
+        dl.save({filename:FILE_NAME, data:text}).then(function(){
+          say("Saved " + FILE_NAME + ".");
+        }, function(err){
+          if(err && err.code === "declined") return;
+          openPanel();
+          document.getElementById("pasteBox").value = text;
+          say("Could not hand you a file here — copy the text below instead.");
+        });
+      }, function(){ fallbackDownload(text); });
+    } else {
+      fallbackDownload(text);
+    }
+  }
+  document.getElementById("exportBtn").addEventListener("click", doExport);
+
+  var panel = document.getElementById("panel");
+  function openPanel(){ panel.hidden = false; document.getElementById("pasteBox").focus(); }
+  function closePanel(){ panel.hidden = true; document.getElementById("pasteBox").value = ""; }
+  document.getElementById("importBtn").addEventListener("click", function(){
+    document.getElementById("pasteBox").value = "";
+    openPanel();
+  });
+  document.getElementById("panelClose").addEventListener("click", closePanel);
+  panel.addEventListener("click", function(e){ if(e.target === panel) closePanel(); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape" && !panel.hidden) closePanel(); });
+
+  function loadText(text){
+    var d;
+    try{ d = JSON.parse(text); }
+    catch(err){ say("That is not valid JSON. Paste the whole contents of " + FILE_NAME + "."); return false; }
+    if(!valid(d)){ say("No progress found in that file."); return false; }
+    apply(d);
+    persist();
+    say("Loaded " + count() + " solved.");
+    return true;
+  }
+  document.getElementById("pasteLoad").addEventListener("click", function(){
+    if(loadText(document.getElementById("pasteBox").value)) closePanel();
+  });
+
+  var fileIn = document.getElementById("fileIn");
+  document.getElementById("pickFile").addEventListener("click", function(){ fileIn.click(); });
+  fileIn.addEventListener("change", function(){
+    var f = fileIn.files && fileIn.files[0];
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){ if(loadText(String(r.result))) closePanel(); };
+    r.readAsText(f);
+    fileIn.value = "";
+  });
+  // ---- reset (inline two-step, no native dialogs) ----
+  var resetBtn = document.getElementById("resetBtn");
+  var armed = false, armT;
+  resetBtn.addEventListener("click", function(){
+    if(!armed){
+      armed = true;
+      resetBtn.textContent = "Erase all ticks?";
+      resetBtn.classList.add("danger");
+      armT = setTimeout(function(){
+        armed = false;
+        resetBtn.textContent = "Reset";
+        resetBtn.classList.remove("danger");
+      }, 4000);
+      return;
+    }
+    clearTimeout(armT);
+    armed = false;
+    resetBtn.textContent = "Reset";
+    resetBtn.classList.remove("danger");
+    solved = Object.create(null);
+    starred = Object.create(null);
+    applyState();
+    persist();
+    say("Cleared.");
+  });
+
+  window.addEventListener("beforeunload", function(){ if(dirty) flush(); });
+
+  refresh();
+  boot();
+})();
+</script>
+
+</body>
+</html>
